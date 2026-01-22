@@ -10,18 +10,7 @@ Access Salesforce class and object definitions from the Illuminated Cloud offlin
 
 ## Quick Start
 
-**Step 1**: Read `.idea/illuminatedCloud.xml` using the Read tool (not bash)
-
-**Step 2**: Find the `offlineSymbolTablePath` value in the XML. It will look like:
-```
-value="$PROJECT_DIR$/IlluminatedCloud/something/OfflineSymbolTable.zip"
-```
-
-**Step 3**: Replace `$PROJECT_DIR$` with the current working directory to get the full path. Example:
-- XML value: `$PROJECT_DIR$/IlluminatedCloud/my_org_butler_DEV/OfflineSymbolTable.zip`
-- Resolved: `/Users/aidan/WebstormProjects/my-org-butler/IlluminatedCloud/my_org_butler_DEV/OfflineSymbolTable.zip`
-
-**Step 4**: Use the resolved literal path in all commands (do not use variables).
+Find the offline symbol table using Glob with pattern `IlluminatedCloud/*/OfflineSymbolTable.zip`, then use the returned path in commands below.
 
 ## Commands
 

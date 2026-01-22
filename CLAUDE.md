@@ -77,3 +77,9 @@ don't represent everything in a Salesforce org. Installed packages, standard Sal
 and org configuration aren't in the local codebase.
 
 As well as searching local files, check if there's a skill or MCP that can query the org directly.
+
+### Salesforce Skills
+
+Before using `salesforce-org-symbols`, first check if `.idea/illuminatedCloud.xml` exists in the project.
+If it does, use `salesforce-illuminated-cloud-symbols` instead—it's faster since it uses the local
+offline symbol table. Only use `salesforce-org-symbols` for non-Illuminated Cloud projects.
