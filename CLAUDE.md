@@ -1,3 +1,7 @@
+# User Context
+
+I work for **Aquiva Labs**, a Salesforce consultancy. References to "Aquiva" in conversations mean our own internal libraries, tools, or procedures.
+
 # Code Style Guidelines
 
 ## Logging
