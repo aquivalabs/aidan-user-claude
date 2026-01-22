@@ -1,0 +1,192 @@
+#!/bin/bash
+# Salesforce org metadata query tool
+# Usage: sf-org <command> [args]
+set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$0")"
+
+usage() {
+  cat <<EOF
+Usage: sf-org <command> [args]
+
+Commands:
+  classes <pattern> [--limit N]     Search Apex classes by name pattern
+  class <name>                      Get full source of an Apex class
+  fields <object> [--limit N]       List fields on an object
+  object <name>                     Check if object exists, show details
+  objects [--namespace NS] [--limit N]  List custom objects
+  triggers [--limit N]              List active triggers
+  namespaces                        List installed package namespaces
+EOF
+  exit 1
+}
+
+query() {
+  local result
+  result=$(sf data query --query "$1" --json 2>/dev/null)
+  if [[ $(echo "$result" | jq -r '.status') != "0" ]]; then
+    echo "Error: Query failed" >&2
+    echo "$result" | jq -r '.message // .result // .' >&2
+    exit 1
+  fi
+  echo "$result"
+}
+
+cmd_classes() {
+  local limit=20 pattern=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --limit) limit="$2"; shift 2 ;;
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) pattern="$1"; shift ;;
+    esac
+  done
+  [[ -z "$pattern" ]] && { echo "Usage: sf-org classes <pattern> [--limit N]" >&2; exit 1; }
+
+  local result
+  result=$(query "SELECT Name, NamespacePrefix FROM ApexClass WHERE Name LIKE '%${pattern}%' ORDER BY Name LIMIT ${limit}")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "No classes found matching '$pattern'"; exit 0; }
+  echo "$result" | jq -r '.result.records[] | if .NamespacePrefix then "\(.Name) (\(.NamespacePrefix))" else .Name end'
+}
+
+cmd_class() {
+  local name=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) name="$1"; shift ;;
+    esac
+  done
+  [[ -z "$name" ]] && { echo "Usage: sf-org class <name>" >&2; exit 1; }
+
+  local result
+  result=$(query "SELECT Name, NamespacePrefix, Body FROM ApexClass WHERE Name = '${name}' LIMIT 1")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "Class '$name' not found"; exit 1; }
+
+  local ns=$(echo "$result" | jq -r '.result.records[0].NamespacePrefix // empty')
+  [[ -n "$ns" ]] && echo "// Class: $name (namespace: $ns)" || echo "// Class: $name"
+  echo "$result" | jq -r '.result.records[0].Body'
+}
+
+cmd_fields() {
+  local limit=50 object=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --limit) limit="$2"; shift 2 ;;
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) object="$1"; shift ;;
+    esac
+  done
+  [[ -z "$object" ]] && { echo "Usage: sf-org fields <object> [--limit N]" >&2; exit 1; }
+
+  local result
+  result=$(query "SELECT QualifiedApiName, DataType, Label FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName = '${object}' ORDER BY QualifiedApiName LIMIT ${limit}")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "No fields found for object '$object' (object may not exist)"; exit 1; }
+
+  echo "Fields on $object:"
+  echo "$result" | jq -r '.result.records[] | "  \(.QualifiedApiName) (\(.DataType))"'
+}
+
+cmd_object() {
+  local name=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) name="$1"; shift ;;
+    esac
+  done
+  [[ -z "$name" ]] && { echo "Usage: sf-org object <name>" >&2; exit 1; }
+
+  local result
+  result=$(query "SELECT QualifiedApiName, Label, NamespacePrefix, IsCustomizable FROM EntityDefinition WHERE QualifiedApiName = '${name}' LIMIT 1")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "Object '$name' not found"; exit 1; }
+
+  echo "$result" | jq -r '.result.records[0] | "Object: \(.QualifiedApiName)\nLabel: \(.Label)\nNamespace: \(.NamespacePrefix // "none")\nCustomizable: \(.IsCustomizable)"'
+}
+
+cmd_objects() {
+  local limit=50 namespace=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --limit) limit="$2"; shift 2 ;;
+      --namespace) namespace="$2"; shift 2 ;;
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) echo "Unexpected argument: $1" >&2; exit 1 ;;
+    esac
+  done
+
+  local query_str
+  if [[ -n "$namespace" ]]; then
+    query_str="SELECT QualifiedApiName, Label FROM EntityDefinition WHERE NamespacePrefix = '${namespace}' ORDER BY QualifiedApiName LIMIT ${limit}"
+  else
+    query_str="SELECT QualifiedApiName, Label, NamespacePrefix FROM EntityDefinition WHERE IsCustomizable = true AND IsCustomSetting = false AND QualifiedApiName LIKE '%__c' ORDER BY QualifiedApiName LIMIT ${limit}"
+  fi
+
+  local result
+  result=$(query "$query_str")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+
+  if [[ "$total" == "0" ]]; then
+    [[ -n "$namespace" ]] && echo "No custom objects found in namespace '$namespace'" || echo "No custom objects found"
+    exit 0
+  fi
+
+  if [[ -n "$namespace" ]]; then
+    echo "$result" | jq -r '.result.records[] | "\(.QualifiedApiName) - \(.Label)"'
+  else
+    echo "$result" | jq -r '.result.records[] | if .NamespacePrefix then "\(.QualifiedApiName) - \(.Label) (\(.NamespacePrefix))" else "\(.QualifiedApiName) - \(.Label)" end'
+  fi
+}
+
+cmd_triggers() {
+  local limit=20
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --limit) limit="$2"; shift 2 ;;
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) echo "Unexpected argument: $1" >&2; exit 1 ;;
+    esac
+  done
+
+  local result
+  result=$(query "SELECT Name, TableEnumOrId, NamespacePrefix FROM ApexTrigger WHERE Status = 'Active' ORDER BY Name LIMIT ${limit}")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "No active triggers found"; exit 0; }
+
+  echo "$result" | jq -r '.result.records[] | if .NamespacePrefix then "\(.Name) on \(.TableEnumOrId) (\(.NamespacePrefix))" else "\(.Name) on \(.TableEnumOrId)" end'
+}
+
+cmd_namespaces() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -*) echo "Unknown option: $1" >&2; exit 1 ;;
+      *) echo "Unexpected argument: $1" >&2; exit 1 ;;
+    esac
+  done
+
+  local result
+  result=$(query "SELECT NamespacePrefix, COUNT(Id) classCount FROM ApexClass WHERE NamespacePrefix != null GROUP BY NamespacePrefix ORDER BY NamespacePrefix LIMIT 50")
+  local total=$(echo "$result" | jq -r '.result.totalSize')
+  [[ "$total" == "0" ]] && { echo "No installed packages with Apex classes found"; exit 0; }
+
+  echo "Installed packages (by namespace):"
+  echo "$result" | jq -r '.result.records[] | "  \(.NamespacePrefix) (\(.classCount) classes)"'
+}
+
+[[ $# -eq 0 ]] && usage
+
+case "$1" in
+  classes)    shift; cmd_classes "$@" ;;
+  class)      shift; cmd_class "$@" ;;
+  fields)     shift; cmd_fields "$@" ;;
+  object)     shift; cmd_object "$@" ;;
+  objects)    shift; cmd_objects "$@" ;;
+  triggers)   shift; cmd_triggers "$@" ;;
+  namespaces) shift; cmd_namespaces "$@" ;;
+  help|-h|--help) usage ;;
+  *) echo "Unknown command: $1" >&2; usage ;;
+esac
