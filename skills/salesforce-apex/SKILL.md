@@ -1,0 +1,33 @@
+---
+name: salesforce-apex
+description: Provides Apex development workflow including static analysis and testing steps. Use before writing Apex classes or triggers
+allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf project deploy *), Bash(sf apex run test *)
+---
+
+## Workflow
+
+1. **Read project config** — Get `sourceApiVersion` from `sfdx-project.json` for all new `-meta.xml` files.
+
+2. **Write the Apex code**
+
+3. **Check IDE diagnostics** — Use `mcp__ide__getDiagnostics` on new files. Fix errors and warnings before proceeding.
+
+4. **Run static analysis**
+   ```bash
+   sf code-analyzer run --target <path-to-new-files> --view table
+   ```
+   Address violations before proceeding.
+
+5. **Write tests** — Create test classes following [test-guidance.md](test-guidance.md).
+
+6. **Deploy code and tests**
+   ```bash
+   sf project deploy start --source-dir <paths>
+   ```
+
+7. **Run tests in org**
+   ```bash
+   sf apex run test --class-names <TestClassName> --result-format human --wait 10
+   ```
+
+The task is complete when tests pass in the org.

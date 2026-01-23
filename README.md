@@ -2,7 +2,7 @@
 
 This contains the general rules in [CLAUDE.md](CLAUDE.md), and skills in the [skills](skills) directory.
 
-My actual ~/.claude contains lots of other files, but not to be shared. 
+Other files are stored in ~/.claude but they are not configuration.  
 
 ## CLAUDE.md
 
@@ -26,3 +26,5 @@ Some thoughts I've had along the way are:
  - Time spent optimising the skill is probably worthwhile. The skills here could be done by the raw agent, but we're helping by describing the smoothest, shortest path to the goal. And it can go from 10 tool calls to 1 or 2. 
  - The salesforce-org-symbols skill uses scripts to provide a level of indirection. This is for safety: the skill can only access the current default org; and for simplicity: the scripts is easier for the LLM that the details of using the CLI and it can reformat the output
  - Skills allow you to pre-approve some tool calls. This could be very dangerous, but is convenient if the approvals are for read-only operations (e.g. ls, grep) or for specially written scripts that are not harmful
+ - It seems that Claude doesn't think to call a skill while using another skill
+ - Explaining the expected skill use in CLAUDE.md seems to help, especially using the keyword "before" because Claude doesn't always use skills for things that it already knows how to do.

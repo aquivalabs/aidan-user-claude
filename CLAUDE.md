@@ -20,8 +20,14 @@ Only comment to explain the non-obvious: unexpected implementations, external co
 
 Check for an ARCHITECTURE.md file before exploring a codebase.
 
+## Simplicity
+
+Keep things simple while creating code. 
+
+After making a code change, always re-read the code and try to simplify it.
+
 ## Salesforce Projects
 
-Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Check if there's a skill or MCP that can query the org directly.
+BEFORE writing Apex, use `salesforce-apex` skill.
 
-Before using `salesforce-org-symbols`, check if `.idea/illuminatedCloud.xml` exists. If so, use `salesforce-illuminated-cloud-symbols` instead—it is faster. 
+Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Find out about these by using the skill `salesforce-illuminated-cloud-symbols` (if `.idea/illuminatedCloud.xml` exists) or otherwise `salesforce-org-symbols`. 
