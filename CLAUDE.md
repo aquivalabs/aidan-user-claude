@@ -30,4 +30,6 @@ After making a code change, always re-read the code and try to simplify it.
 
 BEFORE writing Apex, use `salesforce-apex` skill.
 
+BEFORE writing LWC, use `salesforce-lwc` skill.
+
 Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Find out about these by using the skill `salesforce-illuminated-cloud-symbols` (if `.idea/illuminatedCloud.xml` exists) or otherwise `salesforce-org-symbols`. 
