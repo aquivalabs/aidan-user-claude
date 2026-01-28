@@ -6,6 +6,8 @@ I work for **Aquiva Labs**, a Salesforce consultancy. References to "Aquiva" in 
 
 When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*.
 
+After writing something, always re-read it to see if it could be simpler without losing meaning. 
+
 # Code Style Guidelines
 
 ## Logging
