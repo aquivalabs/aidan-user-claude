@@ -16,6 +16,10 @@ Never log PII. Use identifiers instead.
 
 Only comment to explain the non-obvious: unexpected implementations, external constraints, or hidden edge cases.
 
+## Code Architecture
+
+Avoid classes named `*Service` or `*Helper`. These names are semantically empty—`OrderService` could mean anything. Use names that reveal intent, like `OrderValidator` or `OrderPricer`. `*Helper` suggests a failure to find meaningful abstractions. If existing code uses these patterns, suggest refactoring rather than replicating them.
+
 ## Architecture Documentation
 
 Check for an ARCHITECTURE.md file before exploring a codebase.
