@@ -20,9 +20,9 @@ allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf proje
 
 5. **Write tests** — Create test classes following [test-guidance.md](test-guidance.md).
 
-6. **Deploy code and tests**
+6. **Deploy code and tests** Let source tracking which files to deploy
    ```bash
-   sf project deploy start --source-dir <paths>
+   sf project deploy start
    ```
 
 7. **Run tests in org**
