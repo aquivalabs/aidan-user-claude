@@ -1,7 +1,7 @@
 ---
 name: salesforce-apex
 description: Provides Apex development workflow including static analysis and testing steps. Use before writing Apex classes or triggers
-allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf project deploy *), Bash(sf apex run test *)
+allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf project deploy *), Bash(sf apex run test *), Read(~/.claude/skills/salesforce-apex/*)
 ---
 
 ## Workflow
