@@ -8,6 +8,10 @@ When writing prose, follow the classic style from Stephen Pinker's *The Sense of
 
 After writing something, always re-read it to see if it could be simpler without losing meaning. 
 
+## Specifications
+
+In specifications, include signatures and class structures, but not implementation details or test code.
+
 # Code Style Guidelines
 
 ## Logging
