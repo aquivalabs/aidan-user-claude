@@ -25,3 +25,7 @@ Use `Test.startTest()` and `Test.stopTest()` to isolate governor limits.
 ## Assertions
 
 Only add messages to assertions if the failure reason isn't obvious from context.
+
+## Avoid `@TestVisible`
+
+Test through public methods and observable outcomes. If a private method needs direct testing, it likely belongs in its own class. Reserve `@TestVisible` for cases where no reasonable alternative exists.

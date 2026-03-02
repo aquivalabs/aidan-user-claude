@@ -16,3 +16,6 @@
 /session-env/
 /shell-snapshots/
 /tasks/
+/backups/
+/usage-data/
+/mcp-needs-auth-cache.json
