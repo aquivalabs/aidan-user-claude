@@ -1,30 +1,29 @@
 # Aidan's user-level Claude Configuration
 
-This contains the general rules in [CLAUDE.md](CLAUDE.md), and skills in the [skills](skills) directory.
+This contains general rules in [CLAUDE.md](CLAUDE.md) and skills in the [skills](skills) directory.
 
-Other files are stored in ~/.claude but they are not configuration.  
+Other files are stored in ~/.claude but they are not configuration.
 
 ## CLAUDE.md
 
-I've tried to keep this incredibly short. It should be quite language-agnostic. Specifics can go into other files/skills/whatever.
+Short by design. It should be language-agnostic; specifics live in skills or project-level files.
 
-I've asked Claude and it assures me that
+A few bets that have paid off so far:
 
- - It knows the content of Stephen Pinker's *The Sense of Style* (hooray for stolen IP!), so I don't need to spell out the style from that book
- - Giving examples of good/bad patterns is unnecessary e.g. for comments. I notice that LLM-generated rules files often include that. But it seems redundant. Let's try not having it
-
-I will come back and see how well this terse version is working out but it appeals in a less-is-more style.
-
-Also in this file, I refer to a convention of having an ARCHITECTURE.md file. I've found it very useful in the past to start working on a project by asking Claude to read the whole project and write that file. Then, it can use that file to save time searching around for the same things over and over. 
+- **Referencing Pinker rather than spelling out the style.** Claude knows *The Sense of Style* well enough that a reference is sufficient. No need to restate its principles.
+- **No good/bad examples.** LLM-generated rules files love these, but they seem redundant. Claude follows the intent without them.
+- **Encouraging pushback.** The "Your style" section explicitly invites Claude to challenge decisions, with an escape hatch ("I will tell you directly if something is decided") to keep it from becoming annoying. New — not yet proven in practice.
+- **Specs and plans at the right altitude.** The spec guidance distinguishes structural plans (where code sketches belong) from behavioural specs (where they don't). This came from finding that Claude would over-solutionise specs with implementation detail that constrained the build phase unnecessarily.
+- **ARCHITECTURE.md convention.** The idea is that Claude reads a full project and writes an ARCHITECTURE.md up front, saving repeated exploration. Jury is still out — it adds maintenance overhead when architecture changes, and some sources suggest agents perform worse with such files. Worth revisiting.
 
 ## Skills
 
-I've really just trying these. They work well in basic tests, but how well will they work in day-to-day use? Time will tell here, too. 
+The skills cover Salesforce development: Apex, LWC, and org symbol lookup. Each defines a workflow that guides Claude through the shortest path to working, tested code.
 
-Some thoughts I've had along the way are:
+Things worth noting:
 
- - Time spent optimising the skill is probably worthwhile. The skills here could be done by the raw agent, but we're helping by describing the smoothest, shortest path to the goal. And it can go from 10 tool calls to 1 or 2. 
- - The salesforce-org-symbols skill uses scripts to provide a level of indirection. This is for safety: the skill can only access the current default org; and for simplicity: the scripts is easier for the LLM that the details of using the CLI and it can reformat the output
- - Skills allow you to pre-approve some tool calls. This could be very dangerous, but is convenient if the approvals are for read-only operations (e.g. ls, grep) or for specially written scripts that are not harmful
- - It seems that Claude doesn't think to call a skill while using another skill
- - Explaining the expected skill use in CLAUDE.md seems to help, especially using the keyword "before" because Claude doesn't always use skills for things that it already knows how to do.
+- **Skills replace multi-step agent work with a single invocation.** What might take 10 tool calls becomes 1 or 2. Time spent refining a skill pays for itself quickly.
+- **salesforce-org-symbols uses scripts for indirection.** The skill can only access the current default org, and the scripts reformat CLI output into something easier for the LLM to consume. Safety and simplicity in one move.
+- **allowed-tools enables pre-approved operations.** This is powerful but deliberately scoped to read-only operations and purpose-built scripts. The Apex skill pre-approves IDE diagnostics, static analysis, deploys, and test runs — all things that are safe to let run without confirmation.
+- **CLAUDE.md must point to skills explicitly.** Claude doesn't always reach for a skill it already knows how to do natively. The "BEFORE writing Apex/LWC, use skill X" instructions in CLAUDE.md fix this. The keyword "before" matters.
+- **Skills calling skills.** Early impression was that Claude doesn't call one skill from within another, but this needs re-investigation.
