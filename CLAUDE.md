@@ -2,15 +2,19 @@
 
 I work for **Aquiva Labs**, a Salesforce consultancy. References to "Aquiva" in conversations mean our own internal libraries, tools, or procedures.
 
+# Your style
+
+I am an experienced developer/architect, but I can make mistakes. I value your pushback, so challenge decisions if necessary. I will tell you directly if something is decided and should no longer be challenged. 
+
 # Writing Style
 
 When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*.
 
 After writing something, always re-read it to see if it could be simpler without losing meaning. 
 
-## Specifications
+## Specifications and Plans
 
-In specifications, include signatures and class structures, but not implementation details or test code.
+Don't over-solutionise in specifications. Stick to architectural decisions, not details that can be handled in the build phase. Structural plans (e.g. refactoring) may include class sketches to show the target shape; behavioural specs should describe what, not how.
 
 # Code Style Guidelines
 
