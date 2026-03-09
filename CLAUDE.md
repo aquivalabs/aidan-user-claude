@@ -34,6 +34,10 @@ Avoid classes named `*Service` or `*Helper`. These names are semantically emptyâ
 
 Check for an ARCHITECTURE.md file before exploring a codebase.
 
+## Testing
+
+When tests fail due to mismatches between test doubles (mocks, stubs, fakes) and implementation code, fix the test doubles â€” never modify implementation code to match test doubles.
+
 ## Simplicity
 
 Keep things simple while creating code. 
