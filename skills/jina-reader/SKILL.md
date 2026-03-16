@@ -56,10 +56,26 @@ The Salesforce script adds:
 4. **Collapse type links** — `[String](url "tooltip")` → `String`
 5. **Format parameters** — Jina concatenates parameter descriptions into a single line; the script splits them back into `paramName` / `Type: X` / description blocks
 
-## No API key
+## Troubleshooting
+
+### No API key
 
 If `$JINA_API_KEY` is empty and the script fails:
 
 1. Tell the user they need a Jina API key (free at https://jina.ai/reader).
 2. Ask if they'd like you to set it up — they can paste the key and you'll add it to `~/.claude/settings.json` under the `env` key (e.g. `"env": { "JINA_API_KEY": "<key>" }`).
 3. After writing the key, the user will need to restart Claude Code for the env var to take effect.
+
+### 401 / empty response despite valid key
+
+Claude Code's sandbox strips Authorization headers from outgoing requests unless the domain is allowlisted. If the key is set but requests return 401 or empty output, check that `~/.claude/settings.json` includes:
+
+```json
+"sandbox": {
+  "network": {
+    "allowedDomains": ["r.jina.ai"]
+  }
+}
+```
+
+If missing, add it and restart Claude Code.
