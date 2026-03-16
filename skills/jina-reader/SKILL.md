@@ -6,7 +6,7 @@ description: >-
   known JS-heavy site (developer.salesforce.com, help.salesforce.com,
   trailhead.salesforce.com, developer.mozilla.org, medium.com, docs.google.com).
   DO NOT TRIGGER when: fetching raw APIs, GitHub (use gh CLI), or plain-text URLs.
-allowed-tools: Bash(curl *r.jina.ai*), Bash(sed *)
+allowed-tools: Bash(*r.jina.ai*), Bash(*jina-reader/fetch*.sh*)
 ---
 
 # Jina Reader
@@ -23,35 +23,42 @@ Use Jina when WebFetch returns any of:
 
 ## Fetch and clean
 
-Replace `<the full URL>` with the target URL (including `https://`). Always use the full pipeline — never curl without the sed cleanup, as raw output wastes context window.
+Pick the right script based on the URL's domain. Always use a script — never raw curl, as unprocessed output wastes context window.
+
+### developer.salesforce.com
+
+Strips nav chrome, footer, method index, type-link boilerplate, and "Requires Chatter" sections.
 
 ```bash
-URL="<the full URL>"
-BASE_PATH="${URL%/*}/"
-BASE_DOMAIN="$(echo "$URL" | sed -E 's|(https?://[^/]+).*|\1|')"
-
-curl -sf "https://r.jina.ai/${URL}" \
-  -H "Authorization: Bearer $JINA_API_KEY" \
-  -H "X-Return-Format: markdown" \
-  -H "X-Retain-Images: none" \
-| sed \
-  -e "s|${BASE_PATH}||g" \
-  -e "s|${BASE_DOMAIN}||g" \
-  -e 's/\[\]([^)]*)//g' \
-| cat -s
+~/.claude/skills/jina-reader/fetch-developer.salesforce.com.sh "<the full URL>"
 ```
 
-What the sed cleanup does:
-1. **Strip base path** — removes the directory portion of the request URL. Turns `[text](https://example.com/docs/guide/page.htm)` into `[text](page.htm)`.
-2. **Strip domain** — catches remaining same-domain URLs that didn't share the exact base path, reducing them to site-relative paths.
-3. **Remove empty anchors** — Jina emits `[](url)` self-referencing links that carry no content.
-4. **Collapse blank lines** — `cat -s` reduces runs of blank lines to one.
+### All other sites
 
-If the curl fails (exit code non-zero) and `$JINA_API_KEY` is empty, the key is missing — see setup below.
+Generic pipeline: strips same-domain URLs, removes empty anchors, collapses blank lines.
+
+```bash
+~/.claude/skills/jina-reader/fetch.sh "<the full URL>"
+```
+
+## What the cleanup does
+
+Both scripts share these steps:
+1. **Strip base path** — turns `[text](https://example.com/docs/guide/page.htm)` into `[text](page.htm)`
+2. **Strip domain** — reduces remaining same-domain URLs to site-relative paths
+3. **Remove empty anchors** — Jina emits `[](url)` self-links that carry no content
+4. **Collapse blank lines** — `cat -s` reduces runs of blank lines to one
+
+The Salesforce script adds:
+1. **Content extraction** — finds the second `===` underline (the actual content heading, not the `<title>` tag) and stops at the `DEVELOPER CENTERS` footer
+2. **Strip method index** — removes the bullet-list table of contents (each method's detail section is self-sufficient)
+3. **Strip "Requires Chatter"** — removes the heading and its answer (nearly always "No")
+4. **Collapse type links** — `[String](url "tooltip")` → `String`
+5. **Format parameters** — Jina concatenates parameter descriptions into a single line; the script splits them back into `paramName` / `Type: X` / description blocks
 
 ## No API key
 
-If the key is missing, do not attempt unauthenticated requests. Instead:
+If `$JINA_API_KEY` is empty and the script fails:
 
 1. Tell the user they need a Jina API key (free at https://jina.ai/reader).
 2. Ask if they'd like you to set it up — they can paste the key and you'll add it to `~/.claude/settings.json` under the `env` key (e.g. `"env": { "JINA_API_KEY": "<key>" }`).
