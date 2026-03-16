@@ -53,3 +53,7 @@ BEFORE writing LWC, use `salesforce-lwc` skill.
 Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Find out about these by using the skill `salesforce-illuminated-cloud-symbols` (if `.idea/illuminatedCloud.xml` exists) or otherwise `salesforce-org-symbols`.
 
 When removing metadata from a source-tracked org, delete the local file and deploy — don't use explicit CLI delete commands.
+
+## Web Fetching
+
+BEFORE fetching web content from JS-heavy sites (Salesforce docs, MDN, Medium, etc.), use `jina-reader` skill. Also use it as a fallback when WebFetch returns empty or JS-gated content.
