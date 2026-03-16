@@ -19,3 +19,4 @@
 /backups/
 /usage-data/
 /mcp-needs-auth-cache.json
+**/node_modules/*
