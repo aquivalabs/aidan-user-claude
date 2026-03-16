@@ -2,6 +2,8 @@
 name: markdown-web
 description: Fetch JS-rendered webpages via headless Chromium, returning clean markdown. Handles shadow DOM, cookie consent overlays, and other JS-heavy patterns that defeat simpler fetchers.
 trigger: Use when WebFetch returns empty or JS-gated content, or when the URL is a known JS-heavy site (developer.salesforce.com, help.salesforce.com, trailhead.salesforce.com, developer.mozilla.org, medium.com, docs.google.com).
+allowed_tools:
+  - Bash(node ~/.claude/skills/markdown-web/fetch.mjs *)
 ---
 
 ## Usage
