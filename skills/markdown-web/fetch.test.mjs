@@ -1,6 +1,6 @@
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
-import { matchSite, loadConfig, cleanMarkdown } from "./fetch.mjs";
+import { matchSite, cleanMarkdown } from "./fetch.mjs";
 
 describe("matchSite", () => {
   const config = {
@@ -51,23 +51,35 @@ describe("cleanMarkdown", () => {
 });
 
 describe("integration", { skip: process.env.CI ? "skipped in CI" : false }, () => {
-  it("fetches Salesforce Type class docs", async () => {
+  let exec, script;
+
+  before(async () => {
     const { execFile } = await import("node:child_process");
     const { promisify } = await import("node:util");
-    const exec = promisify(execFile);
+    exec = promisify(execFile);
     const { fileURLToPath } = await import("node:url");
     const { dirname, join } = await import("node:path");
+    script = join(dirname(fileURLToPath(import.meta.url)), "fetch.mjs");
+  });
 
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const script = join(__dirname, "fetch.mjs");
+  it("fetches developer.salesforce.com (native shadow DOM)", async () => {
     const url = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm";
-
-    const { stdout } = await exec("node", [script, url], { timeout: 30000 });
+    const { stdout } = await exec("node", [script, url], { timeout: 45000 });
 
     assert.ok(stdout.includes("# Type Class"), "should have page title");
     assert.ok(stdout.includes("## Namespace"), "should have namespace heading");
     assert.ok(stdout.includes("forName"), "should mention forName method");
     assert.ok(!stdout.includes("ullinks"), "should not contain TOC list class");
     assert.ok(stdout.includes("```"), "should have fenced code blocks");
+  });
+
+  it("fetches help.salesforce.com (LWC synthetic shadow)", async () => {
+    const url = "https://help.salesforce.com/s/articleView?id=sf.data_sandbox_create.htm&type=5";
+    const { stdout } = await exec("node", [script, url], { timeout: 60000 });
+
+    assert.ok(stdout.includes("# Create a Sandbox"), "should have article title");
+    assert.ok(stdout.includes("Sandbox"), "should have article content");
+    assert.ok(!stdout.includes("You are here"), "should not contain breadcrumbs");
+    assert.ok(!stdout.includes("Did this article solve"), "should not contain feedback widget");
   });
 });

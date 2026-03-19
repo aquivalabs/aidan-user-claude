@@ -56,4 +56,4 @@ When removing metadata from a source-tracked org, delete the local file and depl
 
 ## Web Fetching
 
-BEFORE fetching web content from JS-heavy sites (Salesforce docs, MDN, Medium, etc.), use `jina-reader` skill. Also use it as a fallback when WebFetch returns empty or JS-gated content.
+BEFORE fetching web content from JS-heavy sites (Salesforce docs, MDN, Medium, etc.), use `markdown-web` skill. Also use it as a fallback when WebFetch returns empty or JS-gated content.

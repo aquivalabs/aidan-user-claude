@@ -43,11 +43,38 @@ async function fetchPage(url) {
     }
 
     const page = await context.newPage();
-    await page.goto(url, { waitUntil: "load", timeout: 30000 });
 
-    // Wait for content to render inside shadow DOM
+    // LWC synthetic shadow intercepts DOM APIs (innerHTML, querySelector, etc.)
+    // Save native methods before the page loads so we can bypass the interception.
+    if (site.syntheticShadow) {
+      await page.addInitScript(() => {
+        window.__nativeInnerHTML = Object.getOwnPropertyDescriptor(
+          Element.prototype,
+          "innerHTML"
+        );
+        window.__nativeQS = Element.prototype.querySelector;
+        window.__nativeQSA = Element.prototype.querySelectorAll;
+      });
+    }
+
+    const waitUntil = site.syntheticShadow ? "networkidle" : "load";
+    await page.goto(url, { waitUntil, timeout: 30000 });
+
+    if (site.syntheticShadow) {
+      // Dismiss Aura error overlays that block rendering
+      await page.evaluate(() => {
+        document.querySelector("#auraErrorMask")?.remove();
+        document.querySelector(".auraForcedErrorBox")?.remove();
+      });
+    }
+
+    // Wait for content to render
     await page.waitForFunction(
-      ({ shadowPath = [], waitFor }) => {
+      ({ shadowPath = [], waitFor, _synthetic }) => {
+        if (_synthetic) {
+          const qs = window.__nativeQS;
+          return qs ? !!qs.call(document.body, waitFor) : false;
+        }
         let root = document;
         for (const tag of shadowPath) {
           const el = root.querySelector(tag);
@@ -56,67 +83,91 @@ async function fetchPage(url) {
         }
         return !!root.querySelector(waitFor);
       },
-      content,
+      { ...content, _synthetic: !!site.syntheticShadow },
       { timeout: 15000 }
     );
 
-    // Wait for code blocks to render (they load lazily after shadow DOM)
-    await page.waitForFunction(
-      ({ shadowPath = [] }) => {
-        let root = document;
-        for (const tag of shadowPath) {
-          const el = root.querySelector(tag);
-          if (!el?.shadowRoot) return false;
-          root = el.shadowRoot;
-        }
-        const cbs = root.querySelectorAll("dx-code-block");
-        if (cbs.length === 0) return true; // no code blocks to wait for
-        // Wait until at least the first code block has rendered content
-        const first = cbs[0].shadowRoot?.querySelector(".code-block-content pre");
-        return !!first;
-      },
-      content,
-      { timeout: 10000 }
-    ).catch(() => {}); // non-fatal — page may have no code blocks
-
-    // Extract HTML from shadow DOM
-    const html = await page.evaluate(
-      ({ shadowPath = [], selector, removeSelectors = [] }) => {
-        let root = document;
-        for (const tag of shadowPath) {
-          root = root.querySelector(tag).shadowRoot;
-        }
-
-        const container = root.querySelector(selector);
-        if (!container) throw new Error(`Selector "${selector}" not found`);
-
-        for (const sel of removeSelectors) {
-          for (const el of container.querySelectorAll(sel)) {
-            el.remove();
+    if (!site.syntheticShadow) {
+      // Wait for code blocks to render (they load lazily after shadow DOM)
+      await page.waitForFunction(
+        ({ shadowPath = [] }) => {
+          let root = document;
+          for (const tag of shadowPath) {
+            const el = root.querySelector(tag);
+            if (!el?.shadowRoot) return false;
+            root = el.shadowRoot;
           }
-        }
+          const cbs = root.querySelectorAll("dx-code-block");
+          if (cbs.length === 0) return true;
+          const first = cbs[0].shadowRoot?.querySelector(
+            ".code-block-content pre"
+          );
+          return !!first;
+        },
+        content,
+        { timeout: 10000 }
+      ).catch(() => {}); // non-fatal — page may have no code blocks
+    }
 
-        // Inline dx-code-block shadow content before serializing
-        for (const cb of container.querySelectorAll("dx-code-block")) {
-          const cbc = cb.shadowRoot?.querySelector(".code-block-content pre code");
-          if (cbc) {
-            // Extract text from .line spans, skipping line number spans
-            const lines = cbc.querySelectorAll(".line");
-            const text = lines.length
-              ? Array.from(lines).map((l) => l.textContent).join("\n")
-              : cbc.textContent;
-            const pre = document.createElement("pre");
-            const codeEl = document.createElement("code");
-            codeEl.textContent = text;
-            pre.appendChild(codeEl);
-            cb.replaceWith(pre);
-          }
-        }
+    // Extract HTML
+    const html = site.syntheticShadow
+      ? await page.evaluate(
+          ({ selector, removeSelectors = [] }) => {
+            const qs = window.__nativeQS;
+            const qsa = window.__nativeQSA;
+            const getHTML = window.__nativeInnerHTML.get;
 
-        return container.innerHTML;
-      },
-      content
-    );
+            const container = qs.call(document.body, selector);
+            if (!container)
+              throw new Error(`Selector "${selector}" not found`);
+
+            for (const sel of removeSelectors) {
+              for (const el of qsa.call(container, sel)) el.remove();
+            }
+
+            return getHTML.call(container);
+          },
+          content
+        )
+      : await page.evaluate(
+          ({ shadowPath = [], selector, removeSelectors = [] }) => {
+            let root = document;
+            for (const tag of shadowPath) {
+              root = root.querySelector(tag).shadowRoot;
+            }
+
+            const container = root.querySelector(selector);
+            if (!container)
+              throw new Error(`Selector "${selector}" not found`);
+
+            for (const sel of removeSelectors) {
+              for (const el of container.querySelectorAll(sel)) el.remove();
+            }
+
+            // Inline dx-code-block shadow content before serializing
+            for (const cb of container.querySelectorAll("dx-code-block")) {
+              const cbc = cb.shadowRoot?.querySelector(
+                ".code-block-content pre code"
+              );
+              if (cbc) {
+                const lines = cbc.querySelectorAll(".line");
+                const text = lines.length
+                  ? Array.from(lines)
+                      .map((l) => l.textContent)
+                      .join("\n")
+                  : cbc.textContent;
+                const pre = document.createElement("pre");
+                const codeEl = document.createElement("code");
+                codeEl.textContent = text;
+                pre.appendChild(codeEl);
+                cb.replaceWith(pre);
+              }
+            }
+
+            return container.innerHTML;
+          },
+          content
+        );
 
     const turndown = new TurndownService({
       headingStyle: "atx",
