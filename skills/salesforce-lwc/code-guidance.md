@@ -10,3 +10,7 @@ Avoid custom CSS unless absolutely necessary.
 ## Complexity
 
 Separate complex logic into standalone child components. Each component should do one thing well.
+
+## Conditionals
+
+In HTML templates, prefer `lwc:if` over `if:true`.
