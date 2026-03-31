@@ -186,11 +186,28 @@ const isCLI =
   fileURLToPath(import.meta.url) === process.argv[1];
 
 if (isCLI) {
-  const url = process.argv[2];
+  // Suppress noisy browser stderr (protocol errors, font warnings, etc.)
+  process.stderr.write = () => true;
+
+  const args = process.argv.slice(2);
+  let limit = Infinity;
+  const limitIdx = args.indexOf("--limit");
+  if (limitIdx !== -1) {
+    limit = parseInt(args[limitIdx + 1], 10);
+    args.splice(limitIdx, 2);
+  }
+
+  const url = args[0];
   if (!url) {
-    console.error("Usage: node fetch.mjs <url>");
+    process.stdout.write("Usage: node fetch.mjs [--limit N] <url>\n");
     process.exit(1);
   }
-  const md = await fetchPage(url);
+  let md = await fetchPage(url);
+  if (limit !== Infinity) {
+    const lines = md.split("\n");
+    if (lines.length > limit) {
+      md = lines.slice(0, limit).join("\n") + "\n";
+    }
+  }
   process.stdout.write(md);
 }

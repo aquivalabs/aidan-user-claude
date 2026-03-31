@@ -8,9 +8,13 @@ allowed_tools:
 
 ## Usage
 
+Call the script directly — no pipes, redirects, or `cd`:
+
 ```bash
-node ~/.claude/skills/markdown-web/fetch.mjs "<url>"
+node ~/.claude/skills/markdown-web/fetch.mjs --limit 400 "<url>"
 ```
+
+The `--limit N` flag truncates output to N lines. Browser stderr is suppressed automatically. Do NOT add `2>/dev/null`, `| head`, or other shell plumbing.
 
 ## Setup (first time only)
 
