@@ -5,6 +5,7 @@ import { matchSite, cleanMarkdown } from "./fetch.mjs";
 describe("matchSite", () => {
   const config = {
     sites: [
+      { domain: "developer.salesforce.com", pathPattern: "^/docs/ai/", content: { selector: "div.ai" } },
       { domain: "developer.salesforce.com", content: { selector: "div.sf" } },
       { domain: "example.com", content: { selector: "main" } },
     ],
@@ -13,7 +14,17 @@ describe("matchSite", () => {
 
   it("matches exact domain", () => {
     const site = matchSite(config, "https://developer.salesforce.com/docs/foo");
-    assert.equal(site.domain, "developer.salesforce.com");
+    assert.equal(site.content.selector, "div.sf");
+  });
+
+  it("prefers pathPattern match over domain-only match", () => {
+    const site = matchSite(config, "https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api.html");
+    assert.equal(site.content.selector, "div.ai");
+  });
+
+  it("falls back to domain-only when path does not match", () => {
+    const site = matchSite(config, "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/foo.htm");
+    assert.equal(site.content.selector, "div.sf");
   });
 
   it("matches subdomain", () => {
@@ -71,6 +82,14 @@ describe("integration", { skip: process.env.CI ? "skipped in CI" : false }, () =
     assert.ok(stdout.includes("forName"), "should mention forName method");
     assert.ok(!stdout.includes("ullinks"), "should not contain TOC list class");
     assert.ok(stdout.includes("```"), "should have fenced code blocks");
+  });
+
+  it("fetches developer.salesforce.com AI docs (no shadow DOM)", async () => {
+    const url = "https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api.html";
+    const { stdout } = await exec("node", [script, url], { timeout: 45000 });
+
+    assert.ok(stdout.includes("# Agent API Developer Guide"), "should have page title");
+    assert.ok(stdout.includes("Agent API"), "should have content");
   });
 
   it("fetches help.salesforce.com (LWC synthetic shadow)", async () => {

@@ -13,11 +13,17 @@ export function loadConfig() {
 }
 
 export function matchSite(config, url) {
-  const hostname = new URL(url).hostname;
-  const site = config.sites.find(
+  const { hostname, pathname } = new URL(url);
+  const matches = config.sites.filter(
     (s) => hostname === s.domain || hostname.endsWith(`.${s.domain}`)
   );
-  if (site) return site;
+  // Prefer entries with a pathPattern that matches, fall back to entry without one
+  const pathMatch = matches.find(
+    (s) => s.pathPattern && new RegExp(s.pathPattern).test(pathname)
+  );
+  if (pathMatch) return pathMatch;
+  const domainOnly = matches.find((s) => !s.pathPattern);
+  if (domainOnly) return domainOnly;
   return { domain: hostname, ...config.defaults };
 }
 
