@@ -5,6 +5,7 @@ import { matchSite, cleanMarkdown } from "./fetch.mjs";
 describe("matchSite", () => {
   const config = {
     sites: [
+      { domain: "developer.salesforce.com", pathPattern: "/references/", content: { selector: "div.ref" } },
       { domain: "developer.salesforce.com", pathPattern: "^/docs/ai/", content: { selector: "div.ai" } },
       { domain: "developer.salesforce.com", content: { selector: "div.sf" } },
       { domain: "example.com", content: { selector: "main" } },
@@ -17,12 +18,17 @@ describe("matchSite", () => {
     assert.equal(site.content.selector, "div.sf");
   });
 
-  it("prefers pathPattern match over domain-only match", () => {
+  it("prefers first matching pathPattern", () => {
+    const site = matchSite(config, "https://developer.salesforce.com/docs/ai/agentforce/references/agent-api");
+    assert.equal(site.content.selector, "div.ref");
+  });
+
+  it("matches second pathPattern when first does not match", () => {
     const site = matchSite(config, "https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api.html");
     assert.equal(site.content.selector, "div.ai");
   });
 
-  it("falls back to domain-only when path does not match", () => {
+  it("falls back to domain-only when no path matches", () => {
     const site = matchSite(config, "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/foo.htm");
     assert.equal(site.content.selector, "div.sf");
   });
@@ -82,6 +88,14 @@ describe("integration", { skip: process.env.CI ? "skipped in CI" : false }, () =
     assert.ok(stdout.includes("forName"), "should mention forName method");
     assert.ok(!stdout.includes("ullinks"), "should not contain TOC list class");
     assert.ok(stdout.includes("```"), "should have fenced code blocks");
+  });
+
+  it("fetches developer.salesforce.com API reference (deep shadow DOM)", async () => {
+    const url = "https://developer.salesforce.com/docs/ai/agentforce/references/agent-api?meta=Summary";
+    const { stdout } = await exec("node", [script, url], { timeout: 45000 });
+
+    assert.ok(stdout.includes("Agent API"), "should have API title");
+    assert.ok(stdout.includes("Endpoints"), "should have endpoints section");
   });
 
   it("fetches developer.salesforce.com AI docs (no shadow DOM)", async () => {
