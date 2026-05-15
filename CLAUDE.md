@@ -42,7 +42,7 @@ When tests fail due to mismatches between test doubles (mocks, stubs, fakes) and
 
 Keep things simple while creating code. 
 
-After making a code change, always re-read the code and try to simplify it.
+After making a code change, always re-read the code and try to simplify it. In particular, if we solved a problem by adding stuff, re-read to see if we could instead have removed something. 
 
 ## Salesforce Projects
 
