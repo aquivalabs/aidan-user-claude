@@ -46,7 +46,7 @@ After making a code change, always re-read the code and try to simplify it. In p
 
 ## Salesforce Projects
 
-BEFORE writing Apex, use `salesforce-apex` skill.
+BEFORE designing or writing Apex, use `salesforce-apex` skill.
 
 BEFORE writing LWC, use `salesforce-lwc` skill.
 
