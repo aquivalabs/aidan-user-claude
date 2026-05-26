@@ -1,7 +1,7 @@
 ---
 name: salesforce-apex
 description: Provides Apex development workflow including static analysis and testing steps. Use before writing Apex classes or triggers
-allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf project deploy *), Bash(sf apex run test *), Read(~/.claude/skills/salesforce-apex/*)
+allowed-tools: mcp__ide__getDiagnostics, Bash(sf project deploy *), Bash(sf apex run test *), Read(~/.claude/skills/salesforce-apex/*)
 ---
 
 ## Workflow
@@ -12,11 +12,7 @@ allowed-tools: mcp__ide__getDiagnostics, Bash(sf code-analyzer:*), Bash(sf proje
 
 3. **Check IDE diagnostics** — Use `mcp__ide__getDiagnostics` on new files. Fix errors and warnings before proceeding.
 
-4. **Run static analysis**
-   ```bash
-   sf code-analyzer run --target <path-to-new-files> --view table
-   ```
-   Address violations before proceeding.
+4. **Static analysis** — A post-edit hook runs `sf code-analyzer` automatically on `.cls` and `.trigger` files. Review its output and fix violations before proceeding.
 
 5. **Write tests** — Create test classes following [test-guidance.md](test-guidance.md).
 
