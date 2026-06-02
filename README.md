@@ -32,6 +32,10 @@ Things to revisit over time:
 - **ARCHITECTURE.md convention.** The idea is that Claude reads a full project and writes an ARCHITECTURE.md up front, saving repeated exploration. Jury is still out — it adds maintenance overhead when architecture changes, and some sources suggest agents perform worse with such files. Worth revisiting.
 - **General coding advice** It may be that future models already follow our preferred coding style so we could remove some items if/when this happens. 
 
+## Lessons learned
+
+- **Auto-mode made the org-symbols skill redundant.** The `salesforce-org-symbols` skill wrapped a handful of SOQL queries behind a bash script. Its main value was the `allowed-tools` constraint, which gave Claude read-only org access without granting broad shell permissions. Once Claude Code introduced auto-mode — where users pre-approve tool usage rather than confirming each call — that permission-scoping argument disappeared. Claude can construct the same `sf data query` calls itself; the wrapper was just ceremony. Removed June 2026.
+
 ## Plugin: aidan-salesforce-skills
 
 The Salesforce skills (Apex, LWC, org symbol lookup) plus the code-analyzer hook are bundled as a plugin. Each skill defines a workflow that guides Claude through the shortest path to working, tested code. The hook runs `sf code-analyzer` automatically on every `.cls` or `.trigger` edit.
@@ -39,7 +43,6 @@ The Salesforce skills (Apex, LWC, org symbol lookup) plus the code-analyzer hook
 Things worth noting:
 
 - **Skills replace multi-step agent work with a single invocation.** What might take 10 tool calls becomes 1 or 2. Time spent refining a skill pays for itself quickly.
-- **salesforce-org-symbols uses scripts for indirection.** The skill can only access the current default org, and the scripts reformat CLI output into something easier for the LLM to consume. Safety and simplicity in one move.
 - **allowed-tools enables pre-approved operations.** This is powerful but deliberately scoped to read-only operations and purpose-built scripts. The Apex skill pre-approves IDE diagnostics, deploys, and test runs — all things that are safe to let run without confirmation.
 - **CLAUDE.md must point to skills explicitly.** Claude doesn't always reach for a skill it already knows how to do natively. The "BEFORE writing Apex/LWC, use skill X" instructions in CLAUDE.md fix this. The keyword "before" matters. Plugins can't carry their own CLAUDE.md, so this remains a manual step.
 - **General coding advice matters for skill quality.** The Apex and LWC skills work best alongside general coding guidance (no PII in logs, keep it simple, etc.). Users of this plugin should carry similar rules in their own CLAUDE.md.

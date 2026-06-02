@@ -50,7 +50,7 @@ BEFORE designing or writing Apex, use `aidan-salesforce-skills:salesforce-apex` 
 
 BEFORE writing LWC, use `aidan-salesforce-skills:salesforce-lwc` skill.
 
-Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Find out about these by using the skill `aidan-salesforce-skills:salesforce-illuminated-cloud-symbols` (if `.idea/illuminatedCloud.xml` exists) or otherwise `aidan-salesforce-skills:salesforce-org-symbols`.
+Local source files don't represent everything in a Salesforce org. Installed packages, standard libraries, and org configuration aren't in the local codebase. Find out about these by using the skill `aidan-salesforce-skills:salesforce-illuminated-cloud-symbols` (if `.idea/illuminatedCloud.xml` exists) or otherwise by querying the org directly with `sf data query`.
 
 When removing metadata from a source-tracked org, delete the local file and deploy — don't use explicit CLI delete commands.
 
