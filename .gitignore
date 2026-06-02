@@ -21,3 +21,4 @@
 **/node_modules/*
 /sessions/
 /image-cache/
+.credentials.json
