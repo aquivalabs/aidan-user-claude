@@ -1,13 +1,14 @@
 {
   "name": "aidan-user-claude",
+  "owner": {
+    "name": "Aidan Harding",
+    "email": "aharding@aquivalabs.com"
+  },
   "plugins": [
     {
       "name": "aidan-salesforce-skills",
-      "source": {
-        "source": "git-subdir",
-        "url": "aquivalabs/aidan-user-claude",
-        "path": "skills/aidan-salesforce-skills"
-      }
+      "source": "./skills/aidan-salesforce-skills",
+      "description": "Personal Salesforce development skills: Apex and LWC workflows, org symbol lookups, and automatic code analysis"
     }
   ]
 }
