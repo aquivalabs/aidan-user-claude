@@ -6,9 +6,6 @@ Other files are stored in ~/.claude but they are not configuration.
 
 ## Installing the plugin
 
-For Aidan, the plugin auto-loads from `~/.claude/skills/aidan-salesforce-skills/`.
-
-For others:
 ```
 /plugin marketplace add aquivalabs/aidan-user-claude
 /plugin install aidan-salesforce-skills@aidan-user-claude

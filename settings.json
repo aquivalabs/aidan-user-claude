@@ -28,7 +28,7 @@
   "enabledPlugins": {
     "learning-opportunities@learning-opportunities": true,
     "salesforce-ai-tools@aquiva-labs": true,
-    "aidan-salesforce-skills@aidan-local": true
+    "aidan-salesforce-skills@aidan-user-claude": true
   },
   "extraKnownMarketplaces": {
     "Aquiva": {
@@ -49,24 +49,14 @@
         "url": "https://github.com/aquivalabs/salesforce-ai-tools.git"
       }
     },
-    "aidan-local": {
+    "aidan-user-claude": {
       "source": {
-        "source": "settings",
-        "name": "aidan-local",
-        "plugins": [
-          {
-            "name": "aidan-salesforce-skills",
-            "source": {
-              "source": "git-subdir",
-              "url": "aquivalabs/aidan-user-claude",
-              "path": "skills/aidan-salesforce-skills"
-            }
-          }
-        ]
+        "source": "github",
+        "repo": "aquivalabs/aidan-user-claude"
       }
     }
   },
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "inputNeededNotifEnabled": true
+  "skipAutoPermissionPrompt": true
 }
