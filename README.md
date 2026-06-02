@@ -1,8 +1,25 @@
 # Aidan's user-level Claude Configuration
 
-This contains general rules in [CLAUDE.md](CLAUDE.md) and skills in the [skills](skills) directory.
+This contains general rules in [CLAUDE.md](CLAUDE.md), a personal plugin in [skills/aidan-salesforce-skills](skills/aidan-salesforce-skills), and any remaining standalone skills in the [skills](skills) directory.
 
 Other files are stored in ~/.claude but they are not configuration.
+
+## Installing the plugin
+
+For Aidan, the plugin auto-loads from `~/.claude/skills/aidan-salesforce-skills/`.
+
+For others:
+```
+/plugin marketplace add aquivalabs/aidan-user-claude
+/plugin install aidan-salesforce-skills@aidan-user-claude
+```
+
+Then add the CLAUDE.md nudges — the plugin can't carry these itself:
+
+```markdown
+BEFORE designing or writing Apex, use `aidan-salesforce-skills:salesforce-apex` skill.
+BEFORE writing LWC, use `aidan-salesforce-skills:salesforce-lwc` skill.
+```
 
 ## CLAUDE.md
 
@@ -16,14 +33,13 @@ A few bets that have paid off so far:
 - **Specs and plans at the right altitude.** The spec guidance distinguishes structural plans (where code sketches belong) from behavioural specs (where they don't). This came from finding that Claude would over-solutionise specs with implementation detail that constrained the build phase unnecessarily.
 - **ARCHITECTURE.md convention.** The idea is that Claude reads a full project and writes an ARCHITECTURE.md up front, saving repeated exploration. Jury is still out — it adds maintenance overhead when architecture changes, and some sources suggest agents perform worse with such files. Worth revisiting.
 
-## Skills
+## Plugin: aidan-salesforce-skills
 
-The skills cover Salesforce development: Apex, LWC, and org symbol lookup. Each defines a workflow that guides Claude through the shortest path to working, tested code.
+The Salesforce skills (Apex, LWC, org symbol lookup) plus the code-analyzer hook are bundled as a local plugin. Each skill defines a workflow that guides Claude through the shortest path to working, tested code. The hook runs `sf code-analyzer` automatically on every `.cls` or `.trigger` edit.
 
 Things worth noting:
 
 - **Skills replace multi-step agent work with a single invocation.** What might take 10 tool calls becomes 1 or 2. Time spent refining a skill pays for itself quickly.
 - **salesforce-org-symbols uses scripts for indirection.** The skill can only access the current default org, and the scripts reformat CLI output into something easier for the LLM to consume. Safety and simplicity in one move.
-- **allowed-tools enables pre-approved operations.** This is powerful but deliberately scoped to read-only operations and purpose-built scripts. The Apex skill pre-approves IDE diagnostics, static analysis, deploys, and test runs — all things that are safe to let run without confirmation.
-- **CLAUDE.md must point to skills explicitly.** Claude doesn't always reach for a skill it already knows how to do natively. The "BEFORE writing Apex/LWC, use skill X" instructions in CLAUDE.md fix this. The keyword "before" matters.
-- **Skills calling skills.** Early impression was that Claude doesn't call one skill from within another, but this needs re-investigation.
+- **allowed-tools enables pre-approved operations.** This is powerful but deliberately scoped to read-only operations and purpose-built scripts. The Apex skill pre-approves IDE diagnostics, deploys, and test runs — all things that are safe to let run without confirmation.
+- **CLAUDE.md must point to skills explicitly.** Claude doesn't always reach for a skill it already knows how to do natively. The "BEFORE writing Apex/LWC, use skill X" instructions in CLAUDE.md fix this. The keyword "before" matters. Plugins can't carry their own CLAUDE.md, so this remains a manual step.

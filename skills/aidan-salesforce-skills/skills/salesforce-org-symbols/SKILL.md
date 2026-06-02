@@ -1,12 +1,12 @@
 ---
 name: salesforce-org-symbols
 description: Query Salesforce org for Apex classes, objects, fields, and installed packages. Use BEFORE writing Apex to check for existing frameworks or utilities.
-allowed-tools: Bash(~/.claude/skills/salesforce-org-symbols/scripts/sf-org *)
+allowed-tools: Bash(*/sf-org *)
 ---
 
 # Salesforce Org Symbols
 
-Query org metadata via `~/.claude/skills/salesforce-org-symbols/scripts/sf-org`. Uses the project's default org only.
+Query org metadata via the `sf-org` script bundled in `scripts/sf-org` (relative to this skill directory). Uses the project's default org only.
 
 ## Commands
 

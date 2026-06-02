@@ -1,0 +1,13 @@
+{
+  "name": "aidan-user-claude",
+  "plugins": [
+    {
+      "name": "aidan-salesforce-skills",
+      "source": {
+        "source": "git-subdir",
+        "url": "aquivalabs/aidan-user-claude",
+        "path": "skills/aidan-salesforce-skills"
+      }
+    }
+  ]
+}

@@ -2,21 +2,8 @@
   "env": {
     "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
   },
-  "model": "sonnet",
+  "model": "claude-opus-4-6",
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=$(grep -oE '[^\"]+\\.(cls|trigger)' | head -1); [ -n \"$f\" ] || exit 0; tmp=$(mktemp /tmp/sfca_XXXXX.json); sf code-analyzer run --target \"$f\" --output-file \"$tmp\" >/dev/null 2>&1; total=$(jq '.violationCounts.total' \"$tmp\" 2>/dev/null); [ \"${total:-0}\" -gt 0 ] || { rm -f \"$tmp\"; exit 0; }; { echo \"Code Analyzer: $total violation(s) in $(basename $f)\"; jq -r '.violations[] | \"  [sev\\(.severity)] \\(.engine):\\(.rule) \\(.locations[.primaryLocationIndex].file):\\(.locations[.primaryLocationIndex].startLine) — \\(.message)\"' \"$tmp\"; } >&2; rm -f \"$tmp\"; exit 2",
-            "timeout": 120,
-            "statusMessage": "Running code analyzer..."
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -40,7 +27,8 @@
   },
   "enabledPlugins": {
     "learning-opportunities@learning-opportunities": true,
-    "salesforce-ai-tools@aquiva-labs": true
+    "salesforce-ai-tools@aquiva-labs": true,
+    "aidan-salesforce-skills@aidan-local": true
   },
   "extraKnownMarketplaces": {
     "Aquiva": {
@@ -60,8 +48,25 @@
         "source": "git",
         "url": "https://github.com/aquivalabs/salesforce-ai-tools.git"
       }
+    },
+    "aidan-local": {
+      "source": {
+        "source": "settings",
+        "name": "aidan-local",
+        "plugins": [
+          {
+            "name": "aidan-salesforce-skills",
+            "source": {
+              "source": "git-subdir",
+              "url": "aquivalabs/aidan-user-claude",
+              "path": "skills/aidan-salesforce-skills"
+            }
+          }
+        ]
+      }
     }
   },
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "inputNeededNotifEnabled": true
 }

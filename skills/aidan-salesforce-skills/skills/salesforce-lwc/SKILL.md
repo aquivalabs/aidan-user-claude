@@ -1,7 +1,7 @@
 ---
 name: salesforce-lwc
 description: Use before writing Lightning Web Components.
-allowed-tools: mcp__ide__getDiagnostics, Bash(npm run *), Bash(sf code-analyzer:*), Bash(sf project deploy *), Bash(sf lightning generate *)
+allowed-tools: mcp__ide__getDiagnostics, Bash(npm run *), Bash(sf code-analyzer *), Bash(sf project deploy *), Bash(sf lightning generate *)
 ---
 
 ## Workflow
@@ -12,7 +12,7 @@ allowed-tools: mcp__ide__getDiagnostics, Bash(npm run *), Bash(sf code-analyzer:
 
 3. **Check IDE diagnostics** — Use `mcp__ide__getDiagnostics` on new files. Fix errors and warnings before proceeding.
 
-4. **Run static analysis**
+4. **Static analysis**
    ```bash
    sf code-analyzer run --target <path-to-component> --view table
    ```
