@@ -6,7 +6,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "f=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); case \"$f\" in *.cls|*.trigger) ;; *) exit 0 ;; esac; tmp=$(mktemp /tmp/sfca_XXXXX.json); sf code-analyzer run --target \"$f\" --output-file \"$tmp\" >/dev/null 2>&1; total=$(jq '.violationCounts.total' \"$tmp\" 2>/dev/null); [ \"${total:-0}\" -gt 0 ] || { rm -f \"$tmp\"; exit 0; }; { echo \"Code Analyzer: $total violation(s) in $(basename \"$f\")\"; jq -r '.violations[] | \"  [sev\\(.severity)] \\(.engine):\\(.rule) \\(.locations[.primaryLocationIndex].file):\\(.locations[.primaryLocationIndex].startLine) — \\(.message)\"' \"$tmp\"; } >&2; rm -f \"$tmp\"; exit 2",
+          "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.cls|*.trigger) ;; *) exit 0 ;; esac; [ -f \"$f\" ] || exit 0; tmp=$(mktemp /tmp/sfca_XXXXX.json); sf code-analyzer run --target \"$f\" --output-file \"$tmp\" >/dev/null 2>&1; total=$(jq '.violationCounts.total' \"$tmp\" 2>/dev/null); [ \"${total:-0}\" -gt 0 ] || { rm -f \"$tmp\"; exit 0; }; { echo \"Code Analyzer BLOCKED write: $total violation(s) in $(basename $f) — fix before retrying\"; jq -r '.violations[] | \"  [sev\\(.severity)] \\(.engine):\\(.rule) \\(.locations[.primaryLocationIndex].file):\\(.locations[.primaryLocationIndex].startLine) — \\(.message)\"' \"$tmp\"; } >&2; rm -f \"$tmp\"; exit 2",
           "statusMessage": "Running code analyzer...",
           "timeout": 120
         }
