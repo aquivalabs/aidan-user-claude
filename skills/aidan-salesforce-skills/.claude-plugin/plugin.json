@@ -1,6 +1,6 @@
 {
   "name": "aidan-salesforce-skills",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Personal Salesforce development skills: Apex and LWC workflows, org symbol lookups, and code analysis guidance",
   "author": {
     "name": "Aidan Harding",

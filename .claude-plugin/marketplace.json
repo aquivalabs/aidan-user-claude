@@ -8,7 +8,7 @@
     {
       "name": "aidan-salesforce-skills",
       "source": "./skills/aidan-salesforce-skills",
-      "description": "Personal Salesforce development skills: Apex and LWC workflows, org symbol lookups, and automatic code analysis"
+      "description": "Personal Salesforce development skills: Apex and LWC workflows, org symbol lookups, and code analysis"
     }
   ]
 }

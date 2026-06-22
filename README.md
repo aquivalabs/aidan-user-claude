@@ -34,11 +34,12 @@ Things to revisit over time:
 
 ## Lessons learned
 
+- **A per-edit code-analyzer hook fired too often, and its docs outlived it.** The plugin once ran `sf code-analyzer` after every `.cls`/`.trigger` edit — noisy during multi-edit work, when the analysis only needs to run once as the Apex skill already prescribes. After it was removed, the SKILL.md and README still described it, and Claude trusted that prose instead of checking. Two lessons: grep the docs when you remove a hook, and verify hook behaviour by observing an edit, not by reading what a skill claims. Removed June 2026.
 - **Auto-mode made the org-symbols skill redundant.** The `salesforce-org-symbols` skill wrapped a handful of SOQL queries behind a bash script. Its main value was the `allowed-tools` constraint, which gave Claude read-only org access without granting broad shell permissions. Once Claude Code introduced auto-mode — where users pre-approve tool usage rather than confirming each call — that permission-scoping argument disappeared. Claude can construct the same `sf data query` calls itself; the wrapper was just ceremony. Removed June 2026.
 
 ## Plugin: aidan-salesforce-skills
 
-The Salesforce skills (Apex, LWC, org symbol lookup) plus the code-analyzer hook are bundled as a plugin. Each skill defines a workflow that guides Claude through the shortest path to working, tested code. The hook runs `sf code-analyzer` automatically on every `.cls` or `.trigger` edit.
+The Salesforce skills (Apex, LWC, org symbol lookup) are bundled as a plugin. Each skill defines a workflow that guides Claude through the shortest path to working, tested code. Static analysis is a deliberate step in the Apex workflow: Claude runs `sf code-analyzer` on the changed files and fixes violations before deploying.
 
 Things worth noting:
 
