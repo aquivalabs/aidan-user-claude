@@ -10,7 +10,9 @@ I am an experienced developer/architect, but I can make mistakes. I value your p
 
 When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*.
 
-After writing something, always re-read it to see if it could be simpler without losing meaning. 
+Avoid using em-dashes and "X not Y" phrasing.
+
+After writing something, always re-read it to see if it could be simpler without losing meaning. Be vigorous about removing bloat. 
 
 ## Specifications and Plans
 
