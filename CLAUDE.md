@@ -48,7 +48,7 @@ After making a code change, always re-read the code and try to simplify it. If w
 
 ## CI Scripts
 
-In CI scripts (GitHub Actions, shell steps, etc.), always use the long format of command flags (`--wait` not `-w`). The reader of a CI script is a human auditing infrequently-run automation, so favour readability over brevity.
+In CI scripts (GitHub Actions, shell steps, etc.), always use the long format of every command flag, including shell utilities (`wc --bytes`, `rm --force`), not only CLI tools like `sf`. The reader of a CI script is a human auditing infrequently-run automation, so favour readability over brevity.
 
 ## Salesforce Projects
 
