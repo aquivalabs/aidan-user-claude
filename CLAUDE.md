@@ -46,6 +46,10 @@ Keep things simple while creating code.
 
 After making a code change, always re-read the code and try to simplify it. If we solved a problem by adding, re-read to see if we could instead have removed something. 
 
+## CI Scripts
+
+In CI scripts (GitHub Actions, shell steps, etc.), always use the long format of command flags (`--wait` not `-w`). The reader of a CI script is a human auditing infrequently-run automation, so favour readability over brevity.
+
 ## Salesforce Projects
 
 BEFORE designing or writing Apex, use `aidan-salesforce-skills:salesforce-apex` skill.
