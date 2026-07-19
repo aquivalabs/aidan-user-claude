@@ -31,6 +31,7 @@ Things to revisit over time:
 
 - **ARCHITECTURE.md convention.** The idea is that Claude reads a full project and writes an ARCHITECTURE.md up front, saving repeated exploration. Jury is still out — it adds maintenance overhead when architecture changes, and some sources suggest agents perform worse with such files. Worth revisiting.
 - **General coding advice** It may be that future models already follow our preferred coding style so we could remove some items if/when this happens. 
+- **Guarding against bias as behaviours, not a glossary.** The "Guarding against bias" section is an experiment. Listing named biases (confirmation, sunk cost, anchoring) is nearly inert: naming a bias doesn't help catch it, since the whole problem is that in the moment it just feels like being right. The canonical list is also overlapping and repetitive. So instead of a taxonomy, the section gives a handful of actionable rules, each pairing an observable trigger with a concrete action Claude can execute. It deliberately targets the failure modes that bite in architecture and code work, sycophancy chief among them. Kept short on purpose so it doesn't compete with the code-style rules for attention. The failure mode to watch for is Claude *performing* caution rather than exercising it; cut any line that becomes throat-clearing without changing the substance. New — not yet proven in practice.
 
 ## Lessons learned
 
