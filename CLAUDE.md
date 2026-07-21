@@ -58,6 +58,10 @@ After making a code change, always re-read the code and try to simplify it. If w
 
 In CI scripts (GitHub Actions, shell steps, etc.), always use the long format of every command flag, including shell utilities (`wc --bytes`, `rm --force`), not only CLI tools like `sf`. The reader of a CI script is a human auditing infrequently-run automation, so favour readability over brevity.
 
+## Git
+
+When committing to a side branch to keep work off the branch I have checked out, switch back to that original branch as soon as the commit lands. Better still, do the side-branch work in a separate worktree so my checkout never moves. The side-branch intent is to be invisible to the checked out branch's workflow.
+
 ## Salesforce Projects
 
 BEFORE designing or writing Apex, use `aidan-salesforce-skills:salesforce-apex` skill.
