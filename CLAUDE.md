@@ -38,6 +38,8 @@ Give every cross-reference a title or brief summary in the same sentence. The wo
 
 Prose that outlives the conversation: specs, plans, READMEs, commit messages, PR descriptions.
 
+State the decisions as they now stand. When there is a place for how they were reached (changelog, decision record, alternatives considered, etc.), put it there; otherwise leave it out.
+
 Apply classic style in full here. Before reporting a document as done, always re-read it to see if it could be simpler without losing meaning. Be vigorous about removing bloat.
 
 ### Specifications and Plans
