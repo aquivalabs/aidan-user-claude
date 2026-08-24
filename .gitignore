@@ -32,3 +32,4 @@
 /remote-settings-consent.json
 /.last-cleanup
 .DS_Store
+/config-backups/
