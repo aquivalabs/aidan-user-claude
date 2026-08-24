@@ -16,13 +16,29 @@ I am an experienced developer/architect, but I can make mistakes. I value your p
 
 # Writing Style
 
-When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*.
+These rules cover everything you write, chat replies included.
 
-Avoid using em-dashes and "X not Y" phrasing.
+When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*. In chat, brevity comes first where the two pull against each other. The points that matter most:
 
-After writing something, always re-read it to see if it could be simpler without losing meaning. Be vigorous about removing bloat. 
+- Cut metadiscourse: "it's important to note", "in this section I will", roadmaps for prose short enough to just read.
+- Cut hedges. Make the claim, or say plainly what you're unsure about.
+- Prefer verbs to nouns made from verbs.
+- Be concrete. A specific example, name, or number where an abstraction would do.
+- Assume a reader who is your equal, who can see the world but doesn't yet know what you know. Explain the unfamiliar; explain nothing they can already see.
 
-## Specifications and Plans
+Avoid "X not Y" phrasing.
+
+Prefer full stops, semicolons, parentheses, and commas over em-dashes. Reach for an em-dash only when no other punctuation carries the meaning.
+
+Define any coined or invented term at (or before) its first use; an inline parenthetical is enough. Prefer a plain phrase over a coinage when it is just as clear.
+
+## Documents
+
+Prose that outlives the conversation: specs, plans, READMEs, commit messages, PR descriptions.
+
+Apply classic style in full here. Before reporting a document as done, always re-read it to see if it could be simpler without losing meaning. Be vigorous about removing bloat.
+
+### Specifications and Plans
 
 Don't over-solutionise in specifications. Stick to architectural decisions, not details that can be handled in the build phase. Structural plans (e.g. refactoring) may include class sketches to show the target shape; behavioural specs should describe what, not how.
 
