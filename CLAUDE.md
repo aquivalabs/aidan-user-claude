@@ -18,7 +18,7 @@ I am an experienced developer/architect, but I can make mistakes. I value your p
 
 These rules cover everything you write, chat replies included.
 
-When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*. In chat, brevity comes first where the two pull against each other. The points that matter most:
+When writing prose, follow the classic style from Stephen Pinker's *The Sense of Style*. In chat, brevity comes first. The points that matter most:
 
 - Cut metadiscourse: "it's important to note", "in this section I will", roadmaps for prose short enough to just read.
 - Cut hedges. Make the claim, or say plainly what you're unsure about.
@@ -28,9 +28,11 @@ When writing prose, follow the classic style from Stephen Pinker's *The Sense of
 
 Avoid "X not Y" phrasing.
 
-Prefer full stops, semicolons, parentheses, and commas over em-dashes. Reach for an em-dash only when no other punctuation carries the meaning.
+Prefer full stops, semicolons, parentheses, and commas over em-dashes. Em-dash only when no other punctuation carries the meaning.
 
 Define any coined or invented term at (or before) its first use; an inline parenthetical is enough. Prefer a plain phrase over a coinage when it is just as clear.
+
+Give every cross-reference a title or brief summary in the same sentence. The words must carry the meaning; the reference is evidence.
 
 ## Documents
 
