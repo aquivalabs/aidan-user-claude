@@ -22,3 +22,13 @@
 /sessions/
 /image-cache/
 .credentials.json
+/settings.json
+/settings.local.json
+/daemon/
+/jobs/
+/test-results/
+/policy-limits.json
+/remote-settings.json
+/remote-settings-consent.json
+/.last-cleanup
+.DS_Store
