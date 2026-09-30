@@ -78,7 +78,12 @@ In CI scripts (GitHub Actions, shell steps), use the long form of every flag: sh
 
 ## Git
 
-To keep work off the branch I have checked out, do it in a separate worktree so my checkout never moves. If you do switch my branch, switch back as soon as the commit lands. Side-branch work should leave my checkout where it was.
+Work in my checkout by default. Judge from context whether it is free or busy:
+
+- Free (I'm on the base branch, or the task belongs on the branch I have checked out): work in place, creating a branch there if the task needs one.
+- Busy (I'm mid-way through other work and the task belongs on a different branch): use a separate worktree so my checkout never moves. If you do switch my branch, switch back as soon as the commit lands.
+
+When you can't tell, ask.
 
 ## Salesforce Projects
 
