@@ -33,3 +33,7 @@
 /.last-cleanup
 .DS_Store
 /config-backups/
+/skills/synced/
+/daemon.log
+/state/mcp-discover-verdicts.json
+/policy-limits.json.stamp.json
