@@ -1,6 +1,6 @@
 ---
 name: pr-shepherd
-description: Take a PR from open to merged. Checks it is ready, enables squash auto-merge, watches CI and the base branch in the background, and fixes failing checks, conflicts, and semantic breaks from base changes itself, asking the user only when a fix needs judgement. Use whenever the user wants a PR landed or watched through CI, even without naming this skill, "shepherd this PR", "babysit the PR", "get this merged", "merge when green", "keep an eye on CI", "land it".
+description: Take a PR from open to merged. Checks it is ready, enables squash auto-merge, watches CI and the base branch in the background, and fixes failing checks, conflicts, and semantic breaks from base changes itself, asking the user only when a fix needs judgement. Use whenever the user wants a PR landed, even without naming this skill, "shepherd this PR", "babysit the PR", "get this merged", "merge when green", "land it".
 ---
 
 # Shepherd a PR to merge
