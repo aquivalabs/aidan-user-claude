@@ -64,6 +64,8 @@ Avoid classes named `*Service` or `*Helper`. The names say nothing; `OrderServic
 
 Check for an ARCHITECTURE.md file before exploring a codebase.
 
+Put project instructions in AGENTS.md. Claude Code reads it directly, so don't add a CLAUDE.md that imports it.
+
 ## Testing
 
 When a test double (mock, stub, fake) disagrees with the implementation, fix the double. Never change implementation code to match a double.
