@@ -1,36 +1,61 @@
 #!/usr/bin/env bash
-# Usage: watch-pr.sh <pr-number>
+# Usage: watch-pr.sh <pr-number> [--resume]
 # Prints one line per change (base tip, merge state, failed check) and exits when the PR is no longer open.
-# Silence means nothing has changed.
+# Silence means nothing has changed. If gh keeps failing, prints "gh failing: <error>" and exits.
+# --resume continues from the last run's state instead of reporting the current state afresh.
 set -u
-pr=${1:?usage: watch-pr.sh <pr-number>}
+pr=${1:?usage: watch-pr.sh <pr-number> [--resume]}
 interval=60
+max_failures=5
+failures=0
+state_file="$(git rev-parse --git-common-dir)/pr-shepherd-$pr.state"
 prev=""
+if [ "${2:-}" = --resume ] && [ -f "$state_file" ]; then prev=$(cat "$state_file"); fi
+err=$(mktemp)
+trap 'rm -f "$err"' EXIT
+
+# Retries a blip; a persistent failure exits loudly so it can't pass for silence.
+gh_failed() {
+  failures=$((failures + 1))
+  if [ "$failures" -ge "$max_failures" ]; then
+    echo "gh failing: $(tr '\n' ' ' <"$err")"
+    exit 1
+  fi
+  sleep "$interval"
+}
+
+# Check lines carry the head sha, so a check that fails again after a push is a new line.
+# Cancelled checks are left out: a push cancels superseded runs.
+view_jq='"\(.state)\t\(.baseRefName)",
+  "merge state: \(.mergeStateStatus)",
+  (.headRefOid[0:7]) as $sha
+  | .statusCheckRollup[]
+  | select((if .__typename == "StatusContext" then .state else .conclusion end)
+      | IN("FAILURE", "ERROR", "TIMED_OUT", "STARTUP_FAILURE", "ACTION_REQUIRED"))
+  | "check failed: \(.name // .context) @ \($sha)"'
 
 while true; do
-  view=$(gh pr view "$pr" --json state,mergeStateStatus,baseRefName 2>/dev/null)
-  if [ -z "$view" ]; then sleep "$interval"; continue; fi
+  if ! view=$(gh pr view "$pr" --json state,mergeStateStatus,baseRefName,headRefOid,statusCheckRollup --jq "$view_jq" 2>"$err"); then
+    gh_failed; continue
+  fi
+  IFS=$'\t' read -r state base <<<"$(head -n 1 <<<"$view")"
 
-  state=$(jq --raw-output .state <<<"$view")
-  if [ "$state" != OPEN ]; then echo "PR $state"; exit 0; fi
+  if [ "$state" != OPEN ]; then echo "PR $state"; rm -f "$state_file"; exit 0; fi
 
-  base=$(jq --raw-output .baseRefName <<<"$view")
-  base_sha=$(gh api "repos/{owner}/{repo}/commits/$base" --jq .sha 2>/dev/null)
-  if [ -z "$base_sha" ]; then sleep "$interval"; continue; fi
-
-  # gh pr checks exits non-zero while checks are pending or failed, so read its output, not its status.
-  checks=$(gh pr checks "$pr" --json name,bucket 2>/dev/null)
-  [ -n "$checks" ] || checks='[]'
+  if ! base_sha=$(gh api "repos/{owner}/{repo}/commits/$base" --jq .sha 2>"$err"); then
+    gh_failed; continue
+  fi
+  failures=0
 
   current=$(
     {
       echo "base moved: $base_sha"
-      echo "merge state: $(jq --raw-output .mergeStateStatus <<<"$view")"
-      jq --raw-output '.[] | select(.bucket == "fail") | "check failed: \(.name)"' <<<"$checks"
+      tail -n +2 <<<"$view"
     } | sort
   )
 
   comm -13 <(echo "$prev") <(echo "$current")
   prev=$current
+  echo "$prev" >"$state_file"
   sleep "$interval"
 done
