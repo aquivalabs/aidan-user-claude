@@ -77,6 +77,10 @@ Put project instructions in AGENTS.md. Claude Code reads it directly, so don't a
 
 When a test double (mock, stub, fake) disagrees with the implementation, fix the double. Never change implementation code to match a double.
 
+## Script Language
+
+For a script that persists (a skill's helper, a tool in a repo), use Node with TypeScript when Python and Node are otherwise even; I read it more easily. Use Python only where it clearly wins, such as a library Node lacks.
+
 ## Simplicity
 
 Keep code simple. After a change, re-read it and simplify. When you solved a problem by adding, look for what you could have removed instead.
