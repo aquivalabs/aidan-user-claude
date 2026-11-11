@@ -35,6 +35,12 @@ Define any coined or invented term at (or before) its first use; an inline paren
 
 Give every cross-reference a title or brief summary in the same sentence. The words must carry the meaning; the reference is evidence.
 
+## Messages Sent as Me
+
+Slack, email, PR reviews and comments, and anything else posted on my behalf. Send nothing unless I have explicitly told you to send that message. Agreeing to an action ("approve it") doesn't cover text I haven't seen. Draft the exact wording in chat, written to the rules above, and wait for my OK.
+
+Say only what the recipient needs, in my voice.
+
 ## Documents
 
 Prose that outlives the conversation: specs, plans, READMEs, commit messages, PR descriptions.
