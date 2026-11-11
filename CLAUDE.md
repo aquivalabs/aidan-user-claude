@@ -23,6 +23,7 @@ When writing prose, follow the classic style from Stephen Pinker's *The Sense of
 - Cut metadiscourse: "it's important to note", "in this section I will", roadmaps for prose short enough to just read.
 - Cut hedges. Make the claim, or say plainly what you're unsure about.
 - Prefer verbs to nouns made from verbs.
+- No headlinese. Write whole sentences with their articles, pronouns and auxiliary verbs: write "rethink before we roll out" where headlinese gives "rethink before rollout". To shorten, cut ideas and keep the grammar.
 - Be concrete. A specific example, name, or number where an abstraction would do.
 - Assume a reader who is your equal, who can see the world but doesn't yet know what you know. Explain the unfamiliar; explain nothing they can already see.
 
