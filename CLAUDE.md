@@ -106,8 +106,6 @@ BEFORE writing LWC, use `aidan-salesforce-skills:salesforce-lwc` skill.
 
 Local source files don't show everything in a Salesforce org. Installed packages, standard libraries, and org configuration live only in the org. Read them with the `aidan-salesforce-skills:salesforce-illuminated-cloud-symbols` skill when `.idea/illuminatedCloud.xml` exists, or query the org with `sf data query`.
 
-When removing metadata from a source-tracked org, delete the local file and deploy. Don't use explicit CLI delete commands.
-
 ## Web Fetching
 
 BEFORE fetching web content from JS-heavy sites (Salesforce docs, MDN, Medium, etc.), use `engineering-skills:markdown-web` skill. Also use it as a fallback when WebFetch returns empty or JS-gated content.
